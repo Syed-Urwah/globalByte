@@ -12,6 +12,8 @@ class My_Custom_WC_Product_Fields {
     public function __construct() {
         add_action( 'woocommerce_product_options_general_product_data', array( $this, 'add_custom_product_fields' ) );
         add_action( 'woocommerce_process_product_meta', array( $this, 'save_custom_product_fields' ) );
+        add_action( 'woocommerce_single_product_summary', array( $this, 'display_custom_product_fields_frontend' ), 25 );
+
     }
 
     /**
@@ -119,4 +121,53 @@ class My_Custom_WC_Product_Fields {
             delete_post_meta( $post_id, '_max_seats' );
         }
     }
+
+    /**
+     * Display custom fields on the single product page.
+     */
+    public function display_custom_product_fields_frontend() {
+        global $product;
+
+        if ( ! $product ) {
+            return;
+        }
+
+        // --- Start: Placeholder for admin settings check (to be implemented in Task 4) ---
+        // $settings = get_option( 'my_custom_fields_settings', array() );
+        // if ( isset( $settings['enable_product_fields'] ) && $settings['enable_product_fields'] === 'no' ) {
+        //     return;
+        // }
+        // --- End: Placeholder ---
+
+        $product_id     = $product->get_id();
+        $event_date     = get_post_meta( $product_id, '_event_date', true );
+        $event_location = get_post_meta( $product_id, '_event_location', true );
+        $seat_type      = get_post_meta( $product_id, '_seat_type', true );
+        $max_seats      = get_post_meta( $product_id, '_max_seats', true );
+
+        $output_fields = array();
+
+        if ( ! empty( $event_date ) ) {
+            $output_fields[] = '<li><strong>' . esc_html__( 'Event Date:', 'my-custom-wc-fields' ) . '</strong> ' . esc_html( $event_date ) . '</li>';
+        }
+        if ( ! empty( $event_location ) ) {
+            $output_fields[] = '<li><strong>' . esc_html__( 'Event Location:', 'my-custom-wc-fields' ) . '</strong> ' . esc_html( $event_location ) . '</li>';
+        }
+        if ( ! empty( $seat_type ) ) {
+            // Capitalize seat type for display
+            $display_seat_type = ucfirst( $seat_type );
+            $output_fields[] = '<li><strong>' . esc_html__( 'Seat Type:', 'my-custom-wc-fields' ) . '</strong> ' . esc_html( $display_seat_type ) . '</li>';
+        }
+        if ( ! empty( $max_seats ) || $max_seats === '0' ) { // Show if 0, but not if empty string. Note: get_post_meta returns string.
+            $output_fields[] = '<li><strong>' . esc_html__( 'Max Seats:', 'my-custom-wc-fields' ) . '</strong> ' . absint( $max_seats ) . '</li>';
+        }
+
+        if ( ! empty( $output_fields ) ) {
+            echo '<div class="custom-product-fields">';
+            echo '<h3>' . esc_html__( 'Event Details', 'my-custom-wc-fields' ) . '</h3>';
+            echo '<ul>' . implode( '', $output_fields ) . '</ul>';
+            echo '</div>';
+        }
+    }
 }
+
