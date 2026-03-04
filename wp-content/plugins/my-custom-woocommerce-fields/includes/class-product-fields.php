@@ -132,12 +132,11 @@ class My_Custom_WC_Product_Fields {
             return;
         }
 
-        // --- Start: Placeholder for admin settings check (to be implemented in Task 4) ---
-        // $settings = get_option( 'my_custom_fields_settings', array() );
-        // if ( isset( $settings['enable_product_fields'] ) && $settings['enable_product_fields'] === 'no' ) {
-        //     return;
-        // }
-        // --- End: Placeholder ---
+        // Check admin settings to see if product fields should be enabled on the frontend
+        $settings = get_option( 'my_custom_fields_settings', array() );
+        if ( isset( $settings['enable_product_fields'] ) && $settings['enable_product_fields'] === 'no' ) {
+            return;
+        }
 
         $product_id     = $product->get_id();
         $event_date     = get_post_meta( $product_id, '_event_date', true );

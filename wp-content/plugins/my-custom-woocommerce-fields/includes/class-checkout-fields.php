@@ -33,12 +33,11 @@ class My_Custom_WC_Checkout_Fields {
      * @return array Modified checkout fields.
      */
     public function add_custom_checkout_fields_via_filter( $fields ) {
-        // --- Start: Placeholder for admin settings check (to be implemented in Task 4) ---
-        // $settings = get_option( 'my_custom_fields_settings', array() );
-        // if ( isset( $settings['enable_checkout_fields'] ) && $settings['enable_checkout_fields'] === 'no' ) {
-        //     return $fields;
-        // }
-        // --- End: Placeholder ---
+        // Check admin settings to see if checkout fields should be enabled on the frontend
+        $settings = get_option( 'my_custom_fields_settings', array() );
+        if ( isset( $settings['enable_checkout_fields'] ) && $settings['enable_checkout_fields'] === 'no' ) {
+            return $fields;
+        }
 
         $fields['billing']['attendee_name'] = array(
             'type'          => 'text',
@@ -76,12 +75,12 @@ class My_Custom_WC_Checkout_Fields {
      * Validate custom checkout fields.
      */
     public function validate_custom_checkout_fields() {
-        // --- Start: Placeholder for admin settings check (to be implemented in Task 4) ---
-        // $settings = get_option( 'my_custom_fields_settings', array() );
-        // if ( isset( $settings['enable_checkout_fields'] ) && $settings['enable_checkout_fields'] === 'no' ) {
-        //     return;
-        // }
-        // --- End: Placeholder ---
+        // Check admin settings to see if checkout fields should be enabled on the frontend.
+        // If they are disabled, no validation is needed.
+        $settings = get_option( 'my_custom_fields_settings', array() );
+        if ( isset( $settings['enable_checkout_fields'] ) && $settings['enable_checkout_fields'] === 'no' ) {
+            return;
+        }
 
         if ( empty( $_POST['attendee_name'] ) ) {
             wc_add_notice( __( 'Attendee Name is a required field.', 'my-custom-wc-fields' ), 'error' );
@@ -100,9 +99,6 @@ class My_Custom_WC_Checkout_Fields {
      * @param int $order_id The ID of the order.
      */
     public function save_custom_checkout_fields( $order_id ) {
-        // Temporary debug log: check what's in $_POST
-        error_log( 'WooCommerce Custom Fields: POST Data on Order Save: ' . print_r( $_POST, true ) );
-
         $order = wc_get_order( $order_id );
 
         if ( ! $order ) {
@@ -129,6 +125,13 @@ class My_Custom_WC_Checkout_Fields {
      * @param WC_Order $order The order object.
      */
     public function display_custom_checkout_fields_admin_order_meta( $order ) {
+        // Check admin settings to see if checkout fields should be enabled on the frontend.
+        // If they are disabled, we might still want to show them in the admin,
+        // but for consistency with the request, let's also check here.
+        $settings = get_option( 'my_custom_fields_settings', array() );
+        if ( isset( $settings['enable_checkout_fields'] ) && $settings['enable_checkout_fields'] === 'no' ) {
+            return;
+        }
         $attendee_name  = $order->get_meta( '_attendee_name', true );
         $attendee_email = $order->get_meta( '_attendee_email', true );
         $special_notes  = $order->get_meta( '_special_notes', true );
@@ -164,19 +167,15 @@ class My_Custom_WC_Checkout_Fields {
             return;
         }
 
-        // --- Start: Placeholder for admin settings check (to be implemented in Task 4) ---
-        // $settings = get_option( 'my_custom_fields_settings', array() );
-        // if ( isset( $settings['enable_checkout_fields'] ) && $settings['enable_checkout_fields'] === 'no' ) {
-        //     return;
-        // }
-        // --- End: Placeholder ---
+        // Check admin settings to see if checkout fields should be enabled on the frontend
+        $settings = get_option( 'my_custom_fields_settings', array() );
+        if ( isset( $settings['enable_checkout_fields'] ) && $settings['enable_checkout_fields'] === 'no' ) {
+            return;
+        }
 
         $attendee_name  = $order->get_meta( '_attendee_name', true );
         $attendee_email = $order->get_meta( '_attendee_email', true );
         $special_notes  = $order->get_meta( '_special_notes', true );
-
-        // Temporary debug log: check retrieved meta
-        error_log( 'WooCommerce Custom Fields: Thank You Page - Retrieved Meta: Name=' . $attendee_name . ', Email=' . $attendee_email . ', Notes=' . $special_notes );
 
         if ( ! empty( $attendee_name ) || ! empty( $attendee_email ) || ! empty( $special_notes ) ) {
             echo '<div class="woocommerce-order-details">';

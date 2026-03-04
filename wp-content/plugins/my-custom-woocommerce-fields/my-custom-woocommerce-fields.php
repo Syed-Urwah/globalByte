@@ -40,6 +40,12 @@ class My_Custom_WooCommerce_Fields {
         include_once MY_CUSTOM_WC_FIELDS_PLUGIN_DIR . 'includes/class-product-fields.php';
         // Include checkout fields class
         include_once MY_CUSTOM_WC_FIELDS_PLUGIN_DIR . 'includes/class-checkout-fields.php';
+        // Include admin settings class
+        include_once MY_CUSTOM_WC_FIELDS_PLUGIN_DIR . 'includes/class-admin-settings.php';
+        // Include REST API class
+        include_once MY_CUSTOM_WC_FIELDS_PLUGIN_DIR . 'includes/class-rest-api.php';
+
+
 
     }
 
@@ -50,6 +56,8 @@ class My_Custom_WooCommerce_Fields {
         // Instantiate classes
         new My_Custom_WC_Product_Fields();
         new My_Custom_WC_Checkout_Fields();
+        new My_Custom_WC_Admin_Settings();
+        new My_Custom_WC_REST_API();
 
         // Enqueue frontend scripts and styles
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
