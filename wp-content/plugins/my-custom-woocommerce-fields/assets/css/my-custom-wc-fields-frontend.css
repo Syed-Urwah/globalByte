@@ -1,0 +1,32 @@
+/* Fix WooCommerce Checkout Layout */
+.woocommerce-checkout .col2-set {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.woocommerce-checkout .col-1,
+.woocommerce-checkout .col-2 {
+    flex: 1;
+    min-width: 320px;
+}
+
+/* Fix form fields */
+.woocommerce-checkout form .form-row {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.woocommerce-checkout form .form-row input,
+.woocommerce-checkout form .form-row textarea,
+.woocommerce-checkout form .form-row select {
+    width: 100%;
+}
+
+/* Mobile Fix */
+@media (max-width: 768px) {
+    .woocommerce-checkout .col2-set {
+        flex-direction: column;
+    }
+}

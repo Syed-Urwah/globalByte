@@ -38,6 +38,9 @@ class My_Custom_WooCommerce_Fields {
     private function includes() {
         // Include product fields class
         include_once MY_CUSTOM_WC_FIELDS_PLUGIN_DIR . 'includes/class-product-fields.php';
+        // Include checkout fields class
+        include_once MY_CUSTOM_WC_FIELDS_PLUGIN_DIR . 'includes/class-checkout-fields.php';
+
     }
 
     /**
@@ -46,8 +49,29 @@ class My_Custom_WooCommerce_Fields {
     private function init_hooks() {
         // Instantiate classes
         new My_Custom_WC_Product_Fields();
+        new My_Custom_WC_Checkout_Fields();
+
+        // Enqueue frontend scripts and styles
+        add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_assets' ) );
+    }
+
+    /**
+     * Enqueue frontend scripts and styles.
+     */
+    public function enqueue_frontend_assets() {
+        // Enqueue CSS for checkout fields only on the checkout page
+        if ( is_checkout() && ! is_wc_endpoint_url() ) {
+            wp_enqueue_style(
+                'my-custom-wc-fields-frontend',
+                MY_CUSTOM_WC_FIELDS_PLUGIN_URL . 'assets/css/my-custom-wc-fields-frontend.css',
+                array(),
+                MY_CUSTOM_WC_FIELDS_VERSION,
+                'all'
+            );
+        }
     }
 }
+
 
 // Initialize the plugin
 function my_custom_woocommerce_fields_init() {
